@@ -147,27 +147,36 @@ def push_script(data):
 
 
 def address_to_script(addr, *, net=None):
-    if net is None:
-        net = BitcoinMainnet
-    witver, witprog = segwit_addr_decode(net.SEGWIT_HRP, addr)
-    if witprog is not None:
-        if not (0 <= witver <= 16):
-            raise Exception('impossible witness version: {}'.format(witver))
-        OP_n = witver + 0x50 if witver > 0 else 0
-        script = (bytes((OP_n,)) + push_script(bytes(witprog)))
-        return script
-    addrtype, hash_160 = b58_address_to_type_and_hash160(addr)
-    if addrtype == net.ADDRTYPE_P2PKH:
-        script = (b'\x76\xa9' +  # op_dup, op_hash_160
-                  push_script(hash_160) +
-                  b'\x88\xac')                  # op_equalverify, op_checksig
-    elif addrtype == net.ADDRTYPE_P2SH:
-        script = (b'\xa9' +  # op_hash_160
-                  push_script(hash_160) +
-                  b'\x87')                      # op_equal
-    else:
-        raise Exception('unknown address type: {}'.format(addrtype))
-    return script
+    # Try both mainnet and testnet if network not specified
+    networks = [net] if net is not None else [BitcoinMainnet, BitcoinTestnet]
+    
+    for current_net in networks:
+        # First try segwit
+        witver, witprog = segwit_addr_decode(current_net.SEGWIT_HRP, addr)
+        if witprog is not None:
+            if not (0 <= witver <= 16):
+                raise Exception('impossible witness version: {}'.format(witver))
+            OP_n = witver + 0x50 if witver > 0 else 0
+            script = (bytes((OP_n,)) + push_script(bytes(witprog)))
+            return script
+            
+        # Then try legacy addresses
+        try:
+            addrtype, hash_160 = b58_address_to_type_and_hash160(addr)
+            if addrtype == current_net.ADDRTYPE_P2PKH:
+                script = (b'\x76\xa9' +  # op_dup, op_hash_160
+                         push_script(hash_160) +
+                         b'\x88\xac')    # op_equalverify, op_checksig
+                return script
+            elif addrtype == current_net.ADDRTYPE_P2SH:
+                script = (b'\xa9' +      # op_hash_160
+                         push_script(hash_160) +
+                         b'\x87')        # op_equal
+                return script
+        except:
+            continue
+            
+    raise Exception('unknown address type or invalid address')
 
 
 def encode_coinbase_height(n):
