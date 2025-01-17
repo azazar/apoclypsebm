@@ -1,3 +1,8 @@
+## Unreleased Changes
+* Added `--cutoff-difficulty` option to pause mining when network difficulty exceeds
+  a specified value. This helps save power by automatically stopping when mining
+  would be inefficient. Mining resumes when difficulty drops back below the cutoff.
+
 ## New in Version 1.1.4
 * Added `-k`/`--kernel` option for specifying which of available kernels to
 use. Only `apoclypse-0` and `apoclypse-loopy` are available at the moment.
