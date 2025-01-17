@@ -8,6 +8,7 @@
             "module": "apoclypsebm.command",
             "args": [
                 "--platform", "0",
+                "--cutoff-difficulty", "300",
                 "--address", "mgckGY1yRHhrRJRt5Rdce7reVQoq22jsye", // https://bitcoinfaucet.uo1.net/
                 "http://bitcoinrpc:bitcoinrpc@localhost:18332"
             ],

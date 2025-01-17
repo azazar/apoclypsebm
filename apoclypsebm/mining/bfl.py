@@ -78,6 +78,8 @@ def initialize(options):
             min(i, len(options.cutoff_temp) - 1)]
         miners[i].cutoff_interval = options.cutoff_interval[
             min(i, len(options.cutoff_interval) - 1)]
+        miners[i].cutoff_difficulty = options.cutoff_difficulty[
+            min(i, len(options.cutoff_difficulty) - 1)]
     return miners
 
 
@@ -102,6 +104,16 @@ class BFLMiner(Miner):
 
         temperature = self.get_temperature()
         if temperature < self.cutoff_temp:
+            if self.cutoff_difficulty > 0 and self.switch.difficulty > self.cutoff_difficulty:
+                if not hasattr(self, '_last_difficulty_skip') or self._last_difficulty_skip != self.switch.difficulty:
+                    say_line('%s: network difficulty (%.2f) exceeds cutoff (%.2f), skipping...', 
+                            (self.id(), self.switch.difficulty, self.cutoff_difficulty))
+                    self._last_difficulty_skip = self.switch.difficulty
+                return
+            elif hasattr(self, '_last_difficulty_skip'):
+                say_line('%s: network difficulty (%.2f) now below cutoff (%.2f), resuming...', 
+                        (self.id(), self.switch.difficulty, self.cutoff_difficulty))
+                delattr(self, '_last_difficulty_skip')
             response = request(self.device, b'ZDX')
             if self.is_ok(response):
                 if self.switch.update_time:
@@ -140,8 +152,6 @@ class BFLMiner(Miner):
             else:
                 say_line('%s: bad response when submitting job (ZDX): %s',
                          (self.id(), response))
-        else:
-            say_line('%s: temperature exceeds cutoff, waiting...', self.id())
 
     def get_temperature(self):
         response = request(self.device, b'ZLX')

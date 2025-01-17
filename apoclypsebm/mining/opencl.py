@@ -134,6 +134,9 @@ def initialize(options):
         miner.cutoff_interval = options.cutoff_interval[
             min(i, len(options.cutoff_interval) - 1)
         ]
+        miner.cutoff_difficulty = options.cutoff_difficulty[
+            min(i, len(options.cutoff_difficulty) - 1)
+        ]
     return miners
 
 
@@ -255,6 +258,18 @@ class OpenCLMiner(Miner):
                     set_arg(19, uint32_as_bytes(f[4]))
 
             if temperature < self.cutoff_temp:
+                if self.cutoff_difficulty > 0 and self.switch.difficulty > self.cutoff_difficulty:
+                    if not hasattr(self, '_last_difficulty_skip') or self._last_difficulty_skip != self.switch.difficulty:
+                        say_line('%s: network difficulty (%.2f) exceeds cutoff (%.2f), skipping...', 
+                                (self.id(), self.switch.difficulty, self.cutoff_difficulty))
+                        self._last_difficulty_skip = self.switch.difficulty
+                    threads_run_pace = 0
+                    last_rated_pace = monotonic()
+                    continue
+                elif hasattr(self, '_last_difficulty_skip'):
+                    say_line('%s: network difficulty (%.2f) now below cutoff (%.2f), resuming...', 
+                            (self.id(), self.switch.difficulty, self.cutoff_difficulty))
+                    delattr(self, '_last_difficulty_skip')
                 self.kernel.set_arg(14, uint32_as_bytes(base))
                 cl.enqueue_nd_range_kernel(queue, self.kernel,
                                            (global_threads,), self.execution_local_dims)
@@ -263,10 +278,6 @@ class OpenCLMiner(Miner):
                 threads_run_pace += global_threads
                 threads_run += global_threads
                 base = uint32(base + global_threads)
-            else:
-                threads_run_pace = 0
-                last_rated_pace = monotonic()
-                sleep(self.cutoff_interval)
 
             now = monotonic()
             if self.adapter_idx is not None:
@@ -498,6 +509,7 @@ class OpenCLMiner(Miner):
                                     patched += pack('Q', instruction)
                                 return b''.join([data[:pos + offset], patched,
                                                 data[pos + offset + size:]])
+                pass
             except error:
                 pass
         return data

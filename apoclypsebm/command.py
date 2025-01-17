@@ -61,6 +61,8 @@ group.add_option('--cutoff-temp', dest='cutoff_temp', default=[],
                       ' which to skip kernel execution, in C, default=95')
 group.add_option('--cutoff-interval', dest='cutoff_interval', default=[],
                  help='how long to not execute calculations if CUTOFF_TEMP is reached, in seconds, default=0.01')
+group.add_option('--cutoff-difficulty', dest='cutoff_difficulty', default=[],
+                 help='pause mining when network difficulty exceeds this value, default=0')
 group.add_option('--no-server-failbacks', dest='nsf', action='store_true',
                  help='disable using failback hosts provided by server')
 parser.add_option_group(group)
@@ -102,6 +104,7 @@ def main():
 
     options.cutoff_temp = tokenize(options.cutoff_temp, 'cutoff_temp', [95], float)
     options.cutoff_interval = tokenize(options.cutoff_interval, 'cutoff_interval', [0.01], float)
+    options.cutoff_difficulty = tokenize(options.cutoff_difficulty, 'cutoff_difficulty', [0], float)
 
     options_encoding = sys.stdin.encoding
 
@@ -137,7 +140,7 @@ def main():
         if switch:
             switch.stop()
 
-        if not options.no_ocl:
+        if not options.no_ocl and 'opencl' in globals():
             opencl.shutdown()
     sleep(1.1)
 

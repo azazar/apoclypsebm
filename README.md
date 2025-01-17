@@ -89,6 +89,9 @@ Options:
     --cutoff-interval=CUTOFF_INTERVAL
                         how long to not execute calculations if CUTOFF_TEMP is
                         reached, in seconds, default=0.01
+    --cutoff-difficulty=CUTOFF_DIFFICULTY
+                        pause mining when network difficulty exceeds this value,
+                        default=0 (disabled)
     --no-server-failbacks
                         disable using failback hosts provided by server
 
@@ -124,3 +127,7 @@ Solo mining against a Bitcoin Core node's RPC port:
 Mining on OpenCL platform 0, device 1 against a stratum server:
 
     apoclypse -p 0 -d 1 --verbose stratum://u:p@us-east.stratum.hushpool.io:3333
+
+Mining with difficulty cutoff to save power when network difficulty is too high:
+
+    apoclypse --cutoff-difficulty 300 --verbose http://u:p@127.0.0.1:3333
