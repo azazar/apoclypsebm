@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: ApoCLypse BM",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "apoclypsebm.command",
+            "args": [
+                "--platform", "0",
+                "--address", "mgckGY1yRHhrRJRt5Rdce7reVQoq22jsye", // https://bitcoinfaucet.uo1.net/
+                "http://bitcoinrpc:bitcoinrpc@localhost:18332"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}
