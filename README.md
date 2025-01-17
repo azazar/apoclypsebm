@@ -1,10 +1,9 @@
 # apoclypsebm - The ApoCLypse Bitcoin Miner
 ## Background
-This hobby project maintained by
-[Justin T. Arthur](https://github.com/JustinTArthur) undertakes the quixotic
-task of maintaining a modern Bitcoin miner for programmable compute devices like
-GPUs. It was forked from the PyOpenCL Bitcoin Miner (poclbm), a project authored
-by [m0mchil](https://github.com/m0mchil) and contributors.
+This project is a fork of [apoclypsebm](https://github.com/JustinTArthur/apoclypsebm)
+that maintains a modern Bitcoin miner for programmable compute devices like
+GPUs. The original project was forked from the PyOpenCL Bitcoin Miner (poclbm),
+a project authored by [m0mchil](https://github.com/m0mchil) and contributors.
 
 It features an OpenCL Kernel that has incorporated ideas or code from:
 * [diapolo](https://github.com/diapolo)
@@ -35,7 +34,7 @@ for helping me understand getblocktemplate.
 ## Installation
 In an environment with Python 3.5+:
 
-    pip3 install apoclypsebm
+    pip3 install git+https://github.com/azazar/apoclypsebm.git
 
 ## Usage
     apoclypse [OPTION]... SERVER[#tag]...

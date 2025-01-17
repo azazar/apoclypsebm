@@ -15,9 +15,10 @@ args = {
     'description': 'The ApoCLypse Bitcoin Miner',
     'long_description': open('README.md').read(),
     'long_description_content_type': 'text/markdown',
-    'author': 'Justin T. Arthur',
+    'author': 'Justin T. Arthur, Mikhail Evchenko',
     'author_email': 'justinarthur@gmail.com',
-    'url': 'https://github.com/JustinTArthur/apoclypsebm/',
+    'url': 'https://github.com/azazar/apoclypsebm/',
+    'maintainer': 'Mikhail Evchenko',
     'install_requires': ["pyopencl==2024.3", 'pyserial>=2.6', 'PySocks>=1.6.0'],
     'entry_points': {
         'console_scripts': (
